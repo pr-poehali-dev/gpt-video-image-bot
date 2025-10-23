@@ -51,41 +51,49 @@ const Chat = () => {
     };
 
     setMessages(prev => [...prev, userMessage]);
+    const messageToSend = inputValue;
     setInputValue('');
     setIsLoading(true);
 
-    setTimeout(() => {
-      let aiResponse: Message;
-      
-      if (activeMode === 'text') {
-        aiResponse = {
-          id: (Date.now() + 1).toString(),
-          type: 'text',
-          content: 'Я обработал ваш запрос! В реальной версии здесь будет подключен GPT API для генерации ответов.',
-          sender: 'ai',
-          timestamp: new Date()
-        };
-      } else if (activeMode === 'image') {
-        aiResponse = {
-          id: (Date.now() + 1).toString(),
-          type: 'image',
-          content: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&q=80',
-          sender: 'ai',
-          timestamp: new Date()
-        };
-      } else {
-        aiResponse = {
-          id: (Date.now() + 1).toString(),
-          type: 'video',
-          content: 'https://www.w3schools.com/html/mov_bbb.mp4',
-          sender: 'ai',
-          timestamp: new Date()
-        };
+    try {
+      const response = await fetch('https://functions.poehali.dev/ddba8256-f2be-4cf4-abbe-8b39571bc138', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: messageToSend,
+          mode: activeMode
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Ошибка при обращении к API');
       }
 
+      const aiResponse: Message = {
+        id: (Date.now() + 1).toString(),
+        type: data.type,
+        content: data.content,
+        sender: 'ai',
+        timestamp: new Date()
+      };
+
       setMessages(prev => [...prev, aiResponse]);
+    } catch (error) {
+      const errorMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        type: 'text',
+        content: `Ошибка: ${error instanceof Error ? error.message : 'Не удалось получить ответ'}. Проверьте, что вы добавили OPENAI_API_KEY в секреты проекта.`,
+        sender: 'ai',
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
       setIsLoading(false);
-    }, 1500);
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {

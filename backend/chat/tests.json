@@ -1,0 +1,39 @@
+{
+  "tests": [
+    {
+      "name": "Text chat request",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "messages": [
+          {"role": "user", "content": "Hello"}
+        ],
+        "mode": "text"
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "type": "text",
+        "content": "string",
+        "model": "string"
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Image generation request",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "messages": [
+          {"role": "user", "content": "A beautiful sunset"}
+        ],
+        "mode": "image"
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "type": "image",
+        "content": "string"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}

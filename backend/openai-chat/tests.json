@@ -1,0 +1,41 @@
+{
+  "tests": [
+    {
+      "name": "Test OPTIONS request for CORS",
+      "method": "OPTIONS",
+      "path": "/",
+      "expectedStatus": 200,
+      "expectedHeaders": {
+        "Access-Control-Allow-Origin": "*"
+      }
+    },
+    {
+      "name": "Test POST with missing message",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "mode": "text"
+      },
+      "expectedStatus": 400,
+      "expectedBody": {
+        "error": "string"
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Test POST with text mode",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "message": "Привет!",
+        "mode": "text"
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "type": "text",
+        "content": "string"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}
