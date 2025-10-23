@@ -56,13 +56,22 @@ const Chat = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch('https://functions.poehali.dev/ddba8256-f2be-4cf4-abbe-8b39571bc138', {
+      const apiMessages = messages
+        .filter(m => m.type === 'text')
+        .map(m => ({
+          role: m.sender === 'user' ? 'user' : 'assistant',
+          content: m.content
+        }));
+      
+      apiMessages.push({ role: 'user', content: messageToSend });
+
+      const response = await fetch('https://functions.poehali.dev/fc550a7d-17da-4d08-84c2-d644149cd553', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          message: messageToSend,
+          messages: apiMessages,
           mode: activeMode
         })
       });
